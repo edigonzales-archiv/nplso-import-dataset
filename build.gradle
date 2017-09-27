@@ -1,0 +1,5 @@
+apply plugin: "ch.so.agi.gretl"
+
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.steps.*
+
