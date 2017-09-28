@@ -1,6 +1,15 @@
 description = """\n
 Importiert Nutzungsplanungs-INTERLIS-Daten in die Datenbank
 und baut diese in das Publikationsmodell um.
+
+Momentan wird noch nicht parametrisiert (also pro Gemeinde)
+umgebaut, sondern immer der gesamte Datensatz als Quelle
+verwendet. Der parametrisierte Umbau kann erst erfolgen,
+wenn die benötigten GRETL-Steps dies unterstützen.
+
+Die Performance des Umbau-Schrittes dürfte bei erst wenig
+vorhandenen Gemeinden in der Quell-Datenbank nicht
+problematisch sein.
 """
 
 apply plugin: 'ch.so.agi.gretl'
@@ -9,7 +18,12 @@ import ch.so.agi.gretl.tasks.*
 import ch.so.agi.gretl.steps.*
 
 task fubar() {
+    description = "fubar task"
     doLast {
         println "fubar"
     }
+}
+
+task importDataset(type: Ili2dbReplace) {
+
 }
