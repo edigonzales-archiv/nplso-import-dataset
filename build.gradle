@@ -1,5 +1,15 @@
-apply plugin: "ch.so.agi.gretl"
+description = """\n
+Importiert Nutzungsplanungs-INTERLIS-Daten in die Datenbank
+und baut diese in das Publikationsmodell um.
+"""
+
+apply plugin: 'ch.so.agi.gretl'
 
 import ch.so.agi.gretl.tasks.*
 import ch.so.agi.gretl.steps.*
 
+task fubar() {
+    doLast {
+        println "fubar"
+    }
+}
