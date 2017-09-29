@@ -11,7 +11,7 @@ Die Performance des Umbau-Schrittes dürfte bei erst wenig
 vorhandenen Gemeinden in der Quell-Datenbank nicht
 problematisch sein.
 
-'gradle importDataset -Pxtf=bfsnr_gemeindename.xtf'
+'gradle importDataset -Pxtf=path/to/xtf/bfsnr_gemeindename.xtf'
 """
 
 apply plugin: 'ch.so.agi.gretl'
@@ -30,12 +30,12 @@ task checkXtfName() {
     description = "Prüft, ob die ersten vier Buchstaben im XTF-Filenamen einer Nummer entsprechen, die im BfS-Range des Kt. SO liegt."    
     doFirst {
         def bfsRange = 2401..2622
-        def bfsNr = xtf.take(4) as int
+        def bfsNr = file(xtf).getName().take(4) as int
         assert true == bfsRange.contains(bfsNr)
     }
 }
 
-task validateDataset(type: IliValidator) {
+task validateDataset(type: IliValidator, dependsOn: 'checkXtfName') {
     description = "Validiert ein Datensatz (=XTF)."    
     dataFiles = [xtf]
 }
@@ -57,16 +57,22 @@ task transformArpNpl(type: Db2DbTask) {
     sourceDb =  [dbUrl, dbUser, dbPass]
     targetDb = [dbUrl, dbUser, dbPass]
     transferSets = [
-            //new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_grundnutzung.sql", 'arp_npl_pub.nutzungsplanung_grundnutzung', true)
-            //new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_ueberlagernd_flaeche.sql", 'arp_npl_pub.nutzungsplanung_ueberlagernd_flaeche', true)
-            //new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_ueberlagernd_linie.sql", 'arp_npl_pub.nutzungsplanung_ueberlagernd_linie', true)
-            //new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_ueberlagernd_punkt.sql", 'arp_npl_pub.nutzungsplanung_ueberlagernd_punkt', true)
-            new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_beschriftung.sql", 'arp_npl_pub.nutzungsplanung_nutzungsplanung_beschriftung', true)
+            new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_grundnutzung.sql", 'arp_npl_pub.nutzungsplanung_grundnutzung', true),
+            new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_ueberlagernd_flaeche.sql", 'arp_npl_pub.nutzungsplanung_ueberlagernd_flaeche', true),
+            new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_ueberlagernd_linie.sql", 'arp_npl_pub.nutzungsplanung_ueberlagernd_linie', true),
+            new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_ueberlagernd_punkt.sql", 'arp_npl_pub.nutzungsplanung_ueberlagernd_punkt', true),
+            new TransferSet("sql/transform_arp_npl_pub_nutzungsplanung_beschriftung.sql", 'arp_npl_pub.nutzungsplanung_nutzungsplanung_beschriftung', true),
+            new TransferSet("sql/transform_arp_npl_pub_erschliessung_flaechenobjekt.sql", 'arp_npl_pub.nutzungsplanung_erschliessung_flaechenobjekt', true),
+            new TransferSet("sql/transform_arp_npl_pub_erschliessung_linienobjekt.sql", 'arp_npl_pub.nutzungsplanung_erschliessung_linienobjekt', true),
+            new TransferSet("sql/transform_arp_npl_pub_erschliessung_punktobjekt.sql", 'arp_npl_pub.nutzungsplanung_erschliessung_punktobjekt', true),
+            new TransferSet("sql/transform_arp_npl_pub_erschliessung_beschriftung.sql", 'arp_npl_pub.nutzungsplanung_erschliessung_beschriftung', true),
+            new TransferSet("sql/transform_arp_npl_pub_vs_perimeter_verfahrensstand.sql", 'arp_npl_pub.nutzungsplanung_vs_perimeter_verfahrensstand', true),
+            new TransferSet("sql/transform_arp_npl_pub_vs_perimeter_beschriftung.sql", 'arp_npl_pub.nutzungsplanung_vs_perimeter_beschriftung', true),
+            new TransferSet("sql/transform_arp_npl_pub_transfermetadaten.sql", 'arp_npl_pub.nutzungsplanung_transfermetadaten', true)
     ]
 }
 
-
-def setNonExistingPropertyToUndefinedValue(propertyName){
+def setNonExistingPropertyToUndefinedValue(propertyName) {
     setNonExistingPropertyToDefaultValue(propertyName, 'UNDEFINED')
 }
 
