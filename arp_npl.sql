@@ -165,7 +165,7 @@ CREATE TABLE arp_npl.nutzungsplanung_grundnutzung (
   ,typ_grundnutzung bigint NULL
 )
 ;
-SELECT AddGeometryColumn('arp_npl','nutzungsplanung_grundnutzung','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'CURVEPOLYGON',2);
+SELECT AddGeometryColumn('arp_npl','nutzungsplanung_grundnutzung','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'POLYGON',2);
 CREATE INDEX nutzungsplanung_grndntzung_t_basket_idx ON arp_npl.nutzungsplanung_grundnutzung ( t_basket );
 CREATE INDEX nutzungsplanung_grndntzung_t_datasetname_idx ON arp_npl.nutzungsplanung_grundnutzung ( t_datasetname );
 CREATE INDEX nutzungsplanung_grndntzung_geometrie_idx ON arp_npl.nutzungsplanung_grundnutzung USING GIST ( geometrie );
@@ -274,7 +274,7 @@ CREATE TABLE arp_npl.nutzungsplanung_ueberlagernd_flaeche (
   ,typ_ueberlagernd_flaeche bigint NULL
 )
 ;
-SELECT AddGeometryColumn('arp_npl','nutzungsplanung_ueberlagernd_flaeche','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'CURVEPOLYGON',2);
+SELECT AddGeometryColumn('arp_npl','nutzungsplanung_ueberlagernd_flaeche','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'POLYGON',2);
 CREATE INDEX nutzngsplnng_brlgrnd_flche_t_basket_idx1 ON arp_npl.nutzungsplanung_ueberlagernd_flaeche ( t_basket );
 CREATE INDEX nutzngsplnng_brlgrnd_flche_t_datasetname_idx1 ON arp_npl.nutzungsplanung_ueberlagernd_flaeche ( t_datasetname );
 CREATE INDEX nutzngsplnng_brlgrnd_flche_geometrie_idx ON arp_npl.nutzungsplanung_ueberlagernd_flaeche USING GIST ( geometrie );
@@ -382,7 +382,7 @@ CREATE TABLE arp_npl.nutzungsplanung_ueberlagernd_linie (
   ,typ_ueberlagernd_linie bigint NULL
 )
 ;
-SELECT AddGeometryColumn('arp_npl','nutzungsplanung_ueberlagernd_linie','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'COMPOUNDCURVE',2);
+SELECT AddGeometryColumn('arp_npl','nutzungsplanung_ueberlagernd_linie','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'LINESTRING',2);
 CREATE INDEX nutzungsplnng_brlgrnd_lnie_t_basket_idx ON arp_npl.nutzungsplanung_ueberlagernd_linie ( t_basket );
 CREATE INDEX nutzungsplnng_brlgrnd_lnie_t_datasetname_idx ON arp_npl.nutzungsplanung_ueberlagernd_linie ( t_datasetname );
 CREATE INDEX nutzungsplnng_brlgrnd_lnie_geometrie_idx ON arp_npl.nutzungsplanung_ueberlagernd_linie USING GIST ( geometrie );
@@ -595,7 +595,7 @@ CREATE TABLE arp_npl.erschlssngsplnung_erschliessung_flaechenobjekt (
   ,typ_erschliessung_flaechenobjekt bigint NULL
 )
 ;
-SELECT AddGeometryColumn('arp_npl','erschlssngsplnung_erschliessung_flaechenobjekt','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'CURVEPOLYGON',2);
+SELECT AddGeometryColumn('arp_npl','erschlssngsplnung_erschliessung_flaechenobjekt','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'POLYGON',2);
 CREATE INDEX erschlssngsplng_flchnbjekt_t_basket_idx1 ON arp_npl.erschlssngsplnung_erschliessung_flaechenobjekt ( t_basket );
 CREATE INDEX erschlssngsplng_flchnbjekt_t_datasetname_idx1 ON arp_npl.erschlssngsplnung_erschliessung_flaechenobjekt ( t_datasetname );
 CREATE INDEX erschlssngsplng_flchnbjekt_geometrie_idx ON arp_npl.erschlssngsplnung_erschliessung_flaechenobjekt USING GIST ( geometrie );
@@ -699,7 +699,7 @@ CREATE TABLE arp_npl.erschlssngsplnung_erschliessung_linienobjekt (
   ,typ_erschliessung_linienobjekt bigint NULL
 )
 ;
-SELECT AddGeometryColumn('arp_npl','erschlssngsplnung_erschliessung_linienobjekt','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'COMPOUNDCURVE',2);
+SELECT AddGeometryColumn('arp_npl','erschlssngsplnung_erschliessung_linienobjekt','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'LINESTRING',2);
 CREATE INDEX erschlssngsplssng_lnnbjekt_t_basket_idx1 ON arp_npl.erschlssngsplnung_erschliessung_linienobjekt ( t_basket );
 CREATE INDEX erschlssngsplssng_lnnbjekt_t_datasetname_idx1 ON arp_npl.erschlssngsplnung_erschliessung_linienobjekt ( t_datasetname );
 CREATE INDEX erschlssngsplssng_lnnbjekt_geometrie_idx ON arp_npl.erschlssngsplnung_erschliessung_linienobjekt USING GIST ( geometrie );
@@ -863,7 +863,7 @@ CREATE TABLE arp_npl.verfahrenstand_vs_perimeter_verfahrensstand (
   ,datum date NULL
 )
 ;
-SELECT AddGeometryColumn('arp_npl','verfahrenstand_vs_perimeter_verfahrensstand','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'CURVEPOLYGON',2);
+SELECT AddGeometryColumn('arp_npl','verfahrenstand_vs_perimeter_verfahrensstand','geometrie',(SELECT srid FROM SPATIAL_REF_SYS WHERE AUTH_NAME='EPSG' AND AUTH_SRID=2056),'POLYGON',2);
 CREATE INDEX verfhrnstnd_v_vrfhrnsstand_t_basket_idx ON arp_npl.verfahrenstand_vs_perimeter_verfahrensstand ( t_basket );
 CREATE INDEX verfhrnstnd_v_vrfhrnsstand_t_datasetname_idx ON arp_npl.verfahrenstand_vs_perimeter_verfahrensstand ( t_datasetname );
 CREATE INDEX verfhrnstnd_v_vrfhrnsstand_geometrie_idx ON arp_npl.verfahrenstand_vs_perimeter_verfahrensstand USING GIST ( geometrie );
