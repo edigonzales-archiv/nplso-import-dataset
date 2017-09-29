@@ -10,9 +10,18 @@ wenn die benötigten GRETL-Steps dies unterstützen.
 Die Performance des Umbau-Schrittes dürfte bei erst wenig
 vorhandenen Gemeinden in der Quell-Datenbank nicht
 problematisch sein.
+
+'gradle importDataset -Pxtf=bfsnr_gemeindename.xtf'
 """
 
 apply plugin: 'ch.so.agi.gretl'
+
+ext {
+    dbUrl = "jdbc:postgresql://geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com:5432/xanadu2"
+    dbUser = "stefan"
+    dbPass = System.env.dbPass
+    setNonExistingPropertyToUndefinedValue('xtf')
+}
 
 import ch.so.agi.gretl.tasks.*
 import ch.so.agi.gretl.steps.*
@@ -21,9 +30,38 @@ task fubar() {
     description = "fubar task"
     doLast {
         println "fubar"
+        println dbPass
+        println xtf
     }
 }
 
-task importDataset(type: Ili2dbReplace) {
+task validateDataset(type: IliValidator) {
+    description = "Validiert ein Datensatz (=XTF)."    
+    dataFiles = [xtf]
+}
 
+// Momentan noch *mit* Validierung.
+// Bis klar ist, was IliValidator-Task genau macht.
+task importDataset (type: Ili2pgReplace) {
+    description = "Ersetzt ein Datensatz (=XTF) in der PostgreSQL-Datenbank."
+    database = ["jdbc:postgresql://geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com:5432/xanadu2", dbUser, dbPass]
+    dbschema = "arp_npl"
+    models = "SO_Nutzungsplanung_20170915"
+    disableValidation = true
+    dataset = xtf.take(4)
+    dataFile = file(xtf)   
+}
+
+
+
+
+
+def setNonExistingPropertyToUndefinedValue(propertyName){
+    setNonExistingPropertyToDefaultValue(propertyName, 'UNDEFINED')
+}
+
+def setNonExistingPropertyToDefaultValue(propertyName, defaultValue) {
+    if (!project.hasProperty(propertyName)) {
+        ext[propertyName] = defaultValue
+    }
 }
