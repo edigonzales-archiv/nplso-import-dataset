@@ -47,7 +47,7 @@ task replaceDataset (type: Ili2pgReplace, dependsOn: 'checkXtfName') {
     database = [dbUrl, dbUser, dbPass]
     dbschema = "arp_npl"
     models = "SO_Nutzungsplanung_20170915"
-    disableValidation = true
+    disableValidation = false
     dataset = xtf.take(4)
     dataFile = file(xtf)   
 }
