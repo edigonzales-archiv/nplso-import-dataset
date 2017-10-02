@@ -1,6 +1,6 @@
 # nplso-import-dataset
 
-GRETL-Job für Import eines NPLSO-Datensatzes (= eine Gemeinde) und Umbau in das Publikationsmodell. Der Prozess resp. der GRETL-Job ist noch highly work-in-progress, da der Funktionsumfang von GRETL zur Zeit (2017-10-02) steig wächst und das Orchestrierungswerkzeug ("GRETL-Jenkins") noch fehlt.
+GRETL-Job für Import eines NPLSO-Datensatzes (= eine Gemeinde) und Umbau in das Publikationsmodell. Der Prozess resp. der GRETL-Job ist noch highly work-in-progress, da der Funktionsumfang von GRETL zur Zeit (2017-10-02) stetig wächst und das Orchestrierungswerkzeug ("GRETL-Jenkins") noch fehlt.
 
 ## Datenbank initialisieren
 
