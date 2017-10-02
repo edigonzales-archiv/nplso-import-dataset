@@ -4,7 +4,7 @@ GRETL-Job für Import eines NPLSO-Datensatzes (= eine Gemeinde) und Umbau in das
 
 ## Datenbank initialisieren
 
-Die beiden Schemen mit den leeren Tabellen (eigentliches Erfassungsmodell und Publikationsmodell) sind mittels `ili2pg`-Kommandozeilenbefehlen erzeugt worden. Dies auch im Hinblick, dass die daraus generierte SQL-Dateien (`arp_npl_pub.sql`, `arp_npl.sql`) im Sinne von "Infrastructure as Code" verwendet werden:
+Die beiden Schemen mit den leeren Tabellen (eigentliches Erfassungsmodell und Publikationsmodell) sind mittels `ili2pg`-Kommandozeilenbefehlen erzeugt worden. Dies auch im Hinblick, dass die daraus generierten SQL-Dateien (`arp_npl_pub.sql`, `arp_npl.sql`) im Sinne von "Infrastructure as Code" verwendet werden können/sollen:
 
 `java -jar ~/Apps/ili2pg-3.10.7/ili2pg.jar --dbhost geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com --dbdatabase xanadu2 --dbusr stefan --dbpwd XXXXXXXX --nameByTopic --disableValidation --defaultSrsCode 2056 --strokeArcs --sqlEnableNull --createGeomIdx --createFkIdx --createEnumTabs --beautifyEnumDispName --createMetaInfo --createBasketCol --createDatasetCol --models SO_Nutzungsplanung_20170915 --dbschema arp_npl --createscript arp_npl.sql --schemaimport`
 
