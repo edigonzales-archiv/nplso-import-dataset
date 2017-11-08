@@ -10,7 +10,75 @@ SELECT
 FROM
     arp_npl.rechtsvorschrften_hinweisweiteredokumente  
 */    
-    
+   
+
+WITH RECURSIVE x(id, parent_fk, parents, last_id, depth) AS 
+(
+  SELECT 
+    ursprung, 
+    hinweis, 
+    ARRAY[ursprung] AS parents, 
+    ursprung AS last_id, 
+    0 AS depth 
+  FROM 
+    arp_npl.rechtsvorschrften_hinweisweiteredokumente
+  
+  UNION ALL
+  
+  SELECT 
+    x.id, 
+    x.parent_fk, 
+    parents||t1.hinweis, 
+    t1.hinweis AS last_id, 
+    x.depth + 1
+  FROM 
+    x 
+    INNER JOIN arp_npl.rechtsvorschrften_hinweisweiteredokumente t1 
+    ON (last_id = t1.ursprung)
+  WHERE 
+    t1.hinweis IS NOT NULL
+), 
+res AS 
+(
+  SELECT 
+    id, 
+    parent_fk, 
+    --array_to_string(parents,';'),
+    parents,
+    depth
+  FROM x 
+  WHERE 
+    depth = (SELECT max(sq.depth) FROM x sq WHERE sq.id = x.id)
+)
+SELECT 
+  *,
+  array_to_json(a_parents)
+FROM
+(
+  SELECT DISTINCT ON (a_parents)
+    a.id,
+    a.parents AS a_parents,
+    b.parents AS b_parents
+  FROM
+    res AS a
+    LEFT JOIN res AS b
+    ON a.parents <@ b.parents AND a.parents != b.parents
+) AS foo
+WHERE b_parents IS NULL
+
+
+SELECT
+row_to_json(row(t_id, ))
+FROM
+arp_npl.rechtsvorschrften_dokument
+
+
+select row_to_json(t)
+from (
+  select * from arp_npl.rechtsvorschrften_dokument
+) t
+
+/*
 WITH RECURSIVE subordinates AS
 (
     SELECT
@@ -57,13 +125,14 @@ SELECT
   --t_id,
     --array_length(my_array, 1),
     --my_array[1],
-    unnest(my_array)
-    
+my_array    
     
 FROM
     foo
 --GROUP BY
   --  my_array[1],
+*/
+
 /*
     
 SELECT 

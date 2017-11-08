@@ -17,12 +17,13 @@ problematisch sein.
 apply plugin: 'ch.so.agi.gretl'
 
 ext {
-    //dbUrl = "jdbc:postgresql://geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com:5432/xanadu2"
-    //dbUser = "stefan"
+    dbUrl = "jdbc:postgresql://geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com:5432/xanadu2"
+    dbUser = "stefan"
+    dbPass = "XXXXXX"
     //dbPass = System.env.dbPass
-    dbUrl = "jdbc:postgresql://192.168.50.5:5432/sogis"
-    dbUser = "ddluser"
-    dbPass = "ddluser"    
+    //dbUrl = "jdbc:postgresql://192.168.50.5:5432/sogis"
+    //dbUser = "ddluser"
+    //dbPass = "ddluser"    
     setNonExistingPropertyToUndefinedValue('xtf')
 }
 
