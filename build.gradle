@@ -17,9 +17,12 @@ problematisch sein.
 apply plugin: 'ch.so.agi.gretl'
 
 ext {
-    dbUrl = "jdbc:postgresql://geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com:5432/xanadu2"
-    dbUser = "stefan"
-    dbPass = System.env.dbPass
+    //dbUrl = "jdbc:postgresql://geodb-dev.cgjofbdf5rqg.eu-central-1.rds.amazonaws.com:5432/xanadu2"
+    //dbUser = "stefan"
+    //dbPass = System.env.dbPass
+    dbUrl = "jdbc:postgresql://192.168.50.5:5432/sogis"
+    dbUser = "ddluser"
+    dbPass = "ddluser"    
     setNonExistingPropertyToUndefinedValue('xtf')
 }
 
@@ -48,7 +51,7 @@ task replaceDataset (type: Ili2pgReplace, dependsOn: 'checkXtfName') {
     dbschema = "arp_npl"
     models = "SO_Nutzungsplanung_20170915"
     disableValidation = false
-    dataset = xtf.take(4)
+    dataset = file(xtf).getName().take(4)
     dataFile = file(xtf)   
 }
 
