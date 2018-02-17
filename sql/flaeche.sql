@@ -125,6 +125,15 @@ typ_ueberlagernd_flaeche_dokument_ref AS
     arp_npl.nutzungsplanung_typ_ueberlagernd_flaeche_dokument AS typ_ueberlagernd_flaeche_dokument
     LEFT JOIN doc_doc_references
     ON typ_ueberlagernd_flaeche_dokument.dokument = doc_doc_references.ursprung
+
+  UNION 
+  
+  SELECT
+    typ_ueberlagernd_flaeche,
+    dokument,
+    dokument AS dok_referenz
+  FROM
+    arp_npl.nutzungsplanung_typ_ueberlagernd_flaeche_dokument
 ),
 typ_ueberlagernd_flaeche_json_dokument AS 
 (
@@ -132,8 +141,8 @@ typ_ueberlagernd_flaeche_json_dokument AS
     *
   FROM
     typ_ueberlagernd_flaeche_dokument_ref
-    LEFT JOIN json_documents_doc_doc_reference
-    ON json_documents_doc_doc_reference.t_id = typ_ueberlagernd_flaeche_dokument_ref.dok_referenz
+    LEFT JOIN json_documents_all
+    ON json_documents_all.t_id = typ_ueberlagernd_flaeche_dokument_ref.dok_referenz
 ),
 typ_ueberlagernd_flaeche_json_dokument_agg AS 
 (
@@ -147,7 +156,8 @@ typ_ueberlagernd_flaeche_json_dokument_agg AS
 ),
 ueberlagernd_flaeche_geometrie_typ AS
 (
-  SELECT 
+  SELECT
+    f.t_id,
     f.t_datasetname::int4 AS bfs_nr,
     f.t_ili_tid,
     f.name_nummer,
@@ -170,10 +180,34 @@ ueberlagernd_flaeche_geometrie_typ AS
     arp_npl.nutzungsplanung_ueberlagernd_flaeche AS f
     LEFT JOIN arp_npl.nutzungsplanung_typ_ueberlagernd_flaeche AS t
     ON f.typ_ueberlagernd_flaeche = t.t_id
+),
+-- Alle Dokumente (inkl. Kaskade), die direkt von der Geometrie
+-- auf ein Dokument zeigen.
+additional_documents_from_geometry AS 
+(
+  SELECT
+    foo.t_id,
+    string_agg(json_dokument, ';') AS json_dokument
+  FROM
+  (
+  SELECT 
+    ueberlagernd_flaeche.t_id,
+    ueberlagernd_flaeche.t_ili_tid,
+    ueberlagernd_flaeche.dokument,
+    unnest(dok_dok_referenzen) AS dok_referenz
+  FROM
+    arp_npl.nutzungsplanung_ueberlagernd_flaeche AS ueberlagernd_flaeche
+    LEFT JOIN doc_doc_references
+    ON ueberlagernd_flaeche.dokument = doc_doc_references.ursprung
+  ) AS foo
+  LEFT JOIN json_documents_all
+  ON json_documents_all.t_id = foo.dok_referenz
+  GROUP BY foo.t_id
 )
--- Es muss noch das mögliche zusätzliche Dokument (Geometrie -> Dokument)
+-- Zusätzlich joinen mit Plandokument-JSON.
+-- Da es wirklich nur EIN Plandokument gibt und keine Kaskade, reicht das.
+-- Ebenso muss die Kaskade aus der Direktbeziehung Geometrie->Dokument
 -- hinzugefügt werden.
--- Und zusätzlich joinen mit Plandokument-JSON.
 SELECT
   g.bfs_nr,
   g.t_ili_tid,
@@ -190,8 +224,9 @@ SELECT
   g.typ_abkuerzung,
   g.typ_verbindlichkeit,
   g.typ_bemerkungen,
+  --d.dokumente AS dok_id,
   CASE 
-    WHEN j.json_dokument IS NOT NULL THEN d.dokumente||';'||j.json_dokument
+    WHEN j.json_dokument IS NOT NULL THEN COALESCE(d.dokumente||';','')||j.json_dokument
     ELSE d.dokumente 
   END AS dok_id,
   jm.json_dokument AS dok_titel
@@ -199,8 +234,7 @@ FROM
   ueberlagernd_flaeche_geometrie_typ AS g 
   LEFT JOIN typ_ueberlagernd_flaeche_json_dokument_agg AS d
   ON g.typ_t_id = d.typ_ueberlagernd_flaeche_t_id
-  LEFT JOIN json_documents_all AS j
-  ON j.t_id = g.dokument
+  LEFT JOIN additional_documents_from_geometry AS j
+  ON j.t_id = g.t_id
   LEFT JOIN json_map_documents AS jm 
   ON jm.t_id = g.plandokument;
-

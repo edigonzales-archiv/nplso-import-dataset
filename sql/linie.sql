@@ -109,6 +109,15 @@ typ_ueberlagernd_linie_dokument_ref AS
     arp_npl.nutzungsplanung_typ_ueberlagernd_linie_dokument AS typ_ueberlagernd_linie_dokument
     LEFT JOIN doc_doc_references
     ON typ_ueberlagernd_linie_dokument.dokument = doc_doc_references.ursprung
+ 
+  UNION 
+  
+  SELECT
+    typ_ueberlagernd_linie,
+    dokument,
+    dokument AS dok_referenz
+  FROM
+    arp_npl.nutzungsplanung_typ_ueberlagernd_linie_dokument
 ),
 typ_ueberlagernd_linie_json_dokument AS 
 (
@@ -116,8 +125,8 @@ typ_ueberlagernd_linie_json_dokument AS
     *
   FROM
     typ_ueberlagernd_linie_dokument_ref
-    LEFT JOIN json_documents_doc_doc_reference
-    ON json_documents_doc_doc_reference.t_id = typ_ueberlagernd_linie_dokument_ref.dok_referenz
+    LEFT JOIN json_documents_all
+    ON json_documents_all.t_id = typ_ueberlagernd_linie_dokument_ref.dok_referenz
 ),
 typ_ueberlagernd_linie_json_dokument_agg AS 
 (
@@ -131,7 +140,8 @@ typ_ueberlagernd_linie_json_dokument_agg AS
 ),
 ueberlagernd_linie_geometrie_typ AS
 (
-  SELECT 
+  SELECT
+    l.t_id,
     l.t_datasetname::int4 AS bfs_nr,
     l.t_ili_tid,
     l.name_nummer,
@@ -153,9 +163,32 @@ ueberlagernd_linie_geometrie_typ AS
     arp_npl.nutzungsplanung_ueberlagernd_linie AS l
     LEFT JOIN arp_npl.nutzungsplanung_typ_ueberlagernd_linie AS t
     ON l.typ_ueberlagernd_linie = t.t_id
+),
+-- Alle Dokumente (inkl. Kaskade), die direkt von der Geometrie
+-- auf ein Dokument zeigen.
+additional_documents_from_geometry AS 
+(
+  SELECT
+    foo.t_id,
+    string_agg(json_dokument, ';') AS json_dokument
+  FROM
+  (
+  SELECT 
+    ueberlagernd_linie.t_id,
+    ueberlagernd_linie.t_ili_tid,
+    ueberlagernd_linie.dokument,
+    unnest(dok_dok_referenzen) AS dok_referenz
+  FROM
+    arp_npl.nutzungsplanung_ueberlagernd_linie AS ueberlagernd_linie
+    LEFT JOIN doc_doc_references
+    ON ueberlagernd_linie.dokument = doc_doc_references.ursprung
+  ) AS foo
+  LEFT JOIN json_documents_all
+  ON json_documents_all.t_id = foo.dok_referenz
+  GROUP BY foo.t_id
 )
--- Es muss noch das mögliche zusätzliche Dokument (Geometrie -> Dokument)
--- hinzugefügt werden.
+-- Es muss noch die möglichen zusätzlichen Dokumente (Geometrie -> Dokument)
+-- hinzugefügt werden. Plural, da auch Kaskade wieder möglich.
 SELECT
   g.bfs_nr,
   g.t_ili_tid,
@@ -180,7 +213,5 @@ FROM
   ueberlagernd_linie_geometrie_typ AS g 
   LEFT JOIN typ_ueberlagernd_linie_json_dokument_agg AS d
   ON g.typ_t_id = d.typ_ueberlagernd_linie_t_id
-  LEFT JOIN json_documents_all AS j
-  ON j.t_id = g.dokument;
-
-
+  LEFT JOIN additional_documents_from_geometry AS j
+  ON j.t_id = g.t_id;
